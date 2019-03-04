@@ -47,6 +47,27 @@ router.get('/', (req, res) => {
     //res.end();
 });
 
+router.post('/', (req, res) => {
+    console.log('stuff requested, req:');
+    console.log(req);
+    //const chatId = getChatId(req);
+    const url = `${botUrl}sendMessage?chat_id=384892774&text=something_nice!`;
+    //const url = `${botUrl}sendMessage?chat_id=384892774&text=${req}`;
+    console.log(url);
+
+    axios.post(url)
+        .then((response) => {
+            console.log('got response:');
+            console.log(response);
+            res.status(200).send();
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+});
+
+
+
 router.get('/heitomi', (req, res) => {
     console.log('heitomi');
     res.status(200).send({msg: 'hei tomi'});
