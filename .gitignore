@@ -62,3 +62,6 @@ typings/
 
 #ignore idea things
 .idea/
+
+#ignore super secret own instructions
+oma_lueminut.txt
