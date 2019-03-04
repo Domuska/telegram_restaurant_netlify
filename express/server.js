@@ -25,7 +25,8 @@ function revertMessage(msg) {
 
 router.get('/', (req, res) => {
     console.log('stuff requested');
-    const url = `${botUrl}sendMessage?chat_id=${getChatId(req)}&text=${getMessage(req)}`;
+    //const url = `${botUrl}sendMessage?chat_id=${getChatId(req)}&text=${getMessage(req)}`;
+    const url = `${botUrl}sendMessage?chat_id=384892774&text=${req}`;
     console.log(url);
 
     axios.post(url)
