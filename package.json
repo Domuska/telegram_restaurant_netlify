@@ -5,6 +5,7 @@
   "main": "express\\server.js",
   "scripts": {
     "start": "node server-local.js",
+    "build": "netlify-lambda build express",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Tomi Lämsä",
