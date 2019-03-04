@@ -55,7 +55,8 @@ router.post('/', (req, res) => {
     console.log('req:');
     console.log(req);
     //const chatId = getChatId(req);
-    const reverted = revertMessage(getMessage(req.body));
+    let reverted = revertMessage(getMessage(req.body));
+    reverted = encodeURIComponent(reverted);
     const url = `${botUrl}sendMessage?chat_id=${getChatId(req.body)}&text=${reverted}`;
     //const url = `${botUrl}sendMessage?chat_id=384892774&text=something_nice!`;
     console.log(url);
