@@ -50,11 +50,13 @@ router.get('/', (req, res) => {
 */
 
 router.post('/', (req, res) => {
-    console.log('stuff requested, req:');
+    console.log('stuff requested, req params:');
     console.log(req.params);
+    console.log('req:');
+    console.log(req);
     //const chatId = getChatId(req);
-    const reverted = revertMessage(getMessage(req.params));
-    const url = `${botUrl}sendMessage?chat_id=${getChatId(req.params)}&text=${reverted}`;
+    const reverted = revertMessage(getMessage(req));
+    const url = `${botUrl}sendMessage?chat_id=${getChatId(req)}&text=${reverted}`;
     //const url = `${botUrl}sendMessage?chat_id=384892774&text=something_nice!`;
     console.log(url);
 
