@@ -26,8 +26,8 @@ function revertMessage(msg) {
 router.get('/', (req, res) => {
     console.log('stuff requested, req:');
     console.log(req);
-    const chatId = getChatId(req);
-    const url = `${botUrl}sendMessage?chat_id=${chatId}&text=something_nice!`;
+    //const chatId = getChatId(req);
+    const url = `${botUrl}sendMessage?chat_id=384892774&text=something_nice!`;
     //const url = `${botUrl}sendMessage?chat_id=384892774&text=${req}`;
     console.log(url);
 
