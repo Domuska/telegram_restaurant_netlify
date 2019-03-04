@@ -23,6 +23,7 @@ function revertMessage(msg) {
     return msg.split("").reverse().join("");
 }
 
+/*
 router.get('/', (req, res) => {
     console.log('stuff requested, req:');
     console.log(req);
@@ -46,19 +47,21 @@ router.get('/', (req, res) => {
     //res.write('<h1>Hello from Express.js!</h1>');
     //res.end();
 });
+*/
 
 router.post('/', (req, res) => {
     console.log('stuff requested, req:');
-    console.log(req);
+    console.log(req.params);
     //const chatId = getChatId(req);
-    const url = `${botUrl}sendMessage?chat_id=384892774&text=something_nice!`;
-    //const url = `${botUrl}sendMessage?chat_id=384892774&text=${req}`;
+    const reverted = revertMessage(getMessage(req.params));
+    const url = `${botUrl}sendMessage?chat_id=${getChatId(req.params)}&text=${reverted}`;
+    //const url = `${botUrl}sendMessage?chat_id=384892774&text=something_nice!`;
     console.log(url);
 
     axios.post(url)
         .then((response) => {
-            console.log('got response:');
-            console.log(response);
+            console.log('got response from tellygram');
+            //console.log(response);
             res.status(200).send();
         })
         .catch((err) => {
