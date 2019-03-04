@@ -9,7 +9,8 @@ const router = express.Router();
 
 console.log('starting up!');
 
-const botUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_KEY}/`;
+// const botUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_KEY}/`;
+// const botUrl = 'https://api.telegram.org/bot767469404:AAEthedTo6elOuJ_4hbHKwiuiBzVDvSzREU/';
 
 function getChatId(data) {
     return data.message.chat.id;
@@ -26,7 +27,8 @@ function revertMessage(msg) {
 router.get('/', (req, res) => {
     console.log('stuff requested');
     //const url = `${botUrl}sendMessage?chat_id=${getChatId(req)}&text=${getMessage(req)}`;
-    const url = `${botUrl}sendMessage?chat_id=384892774&text=${req}`;
+    const url = 'https://api.telegram.org/bot767469404:AAEthedTo6elOuJ_4hbHKwiuiBzVDvSzREU/sendMessage?chat_id=384892774&text=test';
+    //const url = `${botUrl}sendMessage?chat_id=384892774&text=${req}`;
     console.log(url);
 
     axios.post(url)
