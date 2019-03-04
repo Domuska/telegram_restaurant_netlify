@@ -9,8 +9,7 @@ const router = express.Router();
 
 console.log('starting up!');
 
-// const botUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_KEY}/`;
-// const botUrl = 'https://api.telegram.org/bot767469404:AAEthedTo6elOuJ_4hbHKwiuiBzVDvSzREU/';
+const botUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_KEY}/`;
 
 function getChatId(data) {
     return data.message.chat.id;
@@ -25,9 +24,10 @@ function revertMessage(msg) {
 }
 
 router.get('/', (req, res) => {
-    console.log('stuff requested');
-    //const url = `${botUrl}sendMessage?chat_id=${getChatId(req)}&text=${getMessage(req)}`;
-    const url = 'https://api.telegram.org/bot767469404:AAEthedTo6elOuJ_4hbHKwiuiBzVDvSzREU/sendMessage?chat_id=384892774&text=test';
+    console.log('stuff requested, req:');
+    console.log(req);
+    const chatId = getChatId(req);
+    const url = `${botUrl}sendMessage?chat_id=${chatId}&text=something_nice!`;
     //const url = `${botUrl}sendMessage?chat_id=384892774&text=${req}`;
     console.log(url);
 
@@ -35,12 +35,13 @@ router.get('/', (req, res) => {
         .then((response) => {
             console.log('got response:');
             console.log(response);
+            res.status(200).send();
         })
         .catch((err) => {
             console.log(err);
         });
 
-    res.status(200).send();
+
     //res.writeHead(200, { 'Content-Type': 'text/html' });
     //res.write('<h1>Hello from Express.js!</h1>');
     //res.end();
