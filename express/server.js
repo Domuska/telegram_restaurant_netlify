@@ -50,10 +50,8 @@ router.get('/', (req, res) => {
 */
 
 router.post('/', (req, res) => {
-    console.log('stuff requested, req params:');
+    console.log('_________ stuff requested, req body:');
     console.log(req.body);
-    console.log('req:');
-    console.log(req);
     //const chatId = getChatId(req);
     let reverted = revertMessage(getMessage(req.body));
     reverted = encodeURIComponent(reverted);
