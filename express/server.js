@@ -117,9 +117,9 @@ const getMenuByDateUrl = "https://juvenes.fi//DesktopModules/Talents.LunchMenu/L
 
 async function getMenu(restaurant, date) {
     const promises = [];
-    const urlWithDate = `${getMenuByDateUrl}Date=${date}&`;
+    const urlWithDate = `${getMenuByDateUrl}Date=${date}&KitchenId=${restaurant.id}&`;
     restaurant.menuTypeIds.forEach((menuTypeId) => {
-        const menuUrl = `${urlWithDate}KitchenId=${menuTypeId}`;
+        const menuUrl = `${urlWithDate}menuTypeId=${menuTypeId}`;
         console.log('finished url:');
         console.log(menuUrl);
         promises.push(axios.get(menuUrl));
