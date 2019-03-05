@@ -187,7 +187,7 @@ async function handleInlineQuery(body, resHandle) {
         console.log(`found restaurant by name ${restaurant.name}`);
         console.log('fetching data and returning it....');
         const dateNow = new Date();
-        const menu = await getMenu(restaurant, dateNow);
+        const menu = await getMenu(restaurant, dateNow.toISOString());
         inlineResponseBody.results = [
             {
                 type: "article",
