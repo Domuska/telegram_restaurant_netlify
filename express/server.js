@@ -172,6 +172,10 @@ async function handleInlineQuery(body, resHandle) {
                 },
             },
         ];
+        const response = await axios.post(url, inlineResponseBody);
+        console.log('response got from telegram:');
+        console.log(response);
+        resHandle.status(200).send();
     } else {
         try {
             console.log('sending error response, restaurant not found');
