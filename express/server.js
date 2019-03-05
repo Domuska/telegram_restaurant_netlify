@@ -20,7 +20,15 @@ function getMessage(data){
 }
 
 function revertMessage(msg) {
-    return msg.split("").reverse().join("");
+    let reversed;
+    try {
+        reversed = msg.split("").reverse().join("");
+    }
+    catch(error ) {
+        reversed = msg;
+        console.log(error);
+    }
+    return reversed;
 }
 
 /*
