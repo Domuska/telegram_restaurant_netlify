@@ -125,11 +125,15 @@ async function getMenu(restaurant, date) {
         promises.push(axios.get(menuUrl));
     });
     try{
-        const menus = await Promise.all(promises);
-        return menus.map((menu) => {
+        const responses = await Promise.all(promises);
+        console.log('response got for juvenes request:');
+        console.log(responses);
+        return responses.map((response) => {
+            console.log('response:');
+            console.log(response);
             return {
-                food: menu.MealOptions.MenuItems.Name,
-                menuName: menu.name,
+                food: response.data.MealOptions.MenuItems.Name,
+                menuName: response.data.name,
             };
         });
     } catch(error) {
