@@ -4,6 +4,9 @@ const serverless = require('serverless-http');
 const app = express();
 const bodyParser = require('body-parser');
 const axios = require('axios');
+const xml2js = require('xml2js');
+const util = require("util");
+const parseStringPromise = util.promisify(xml2js.parseString);
 
 const router = express.Router();
 
@@ -86,9 +89,9 @@ const knownRestaurants = [
     {
         id: 480054,
         name: "napa",
-        //menuTypeIds: [93, 84, 60, 86, 77],
+        menuTypeIds: [93, 84, 60, 86, 77],
         // for dev only use one menu
-        menuTypeIds: [93],
+        //menuTypeIds: [93],
     },
     {
         id: 49,
@@ -125,15 +128,39 @@ async function getMenu(restaurant, date) {
         promises.push(axios.get(menuUrl));
     });
     try{
-        const responses = await Promise.all(promises);
-        console.log('response got for juvenes request:');
-        console.log(responses);
-        return responses.map((response) => {
+        let responses = await Promise.all(promises);
+        //console.log('response got for juvenes request, likely xml:');
+        //console.log(responses);
+
+        const parseXmlPromises = [];
+        // gotta parse all the responses into JSON since
+        // juvenes doesn't offer JSON api...? The hell. Hello SOAP.
+        responses.forEach((response) => {
+            parseXmlPromises.push(parseStringPromise(response.data));
+        });
+        const parsedResponses = await Promise.all(parseXmlPromises);
+        //console.log('transformed to js, responses:');
+        //console.log(parsedResponses);
+        return parsedResponses.map((response) => {
             console.log('response:');
-            console.log(response);
+
+            const responseAsJson = JSON.parse(response.string._);
+            //console.log(responseAsJson);
+            //console.log('mealOptions:');
+            //console.log(responseAsJson.MealOptions);
+            let food = '';
+            // maybe hopefully there's never more than one meal option per menu ? This api is confusing...
+            // todo there might be. Take a look at it.
+            responseAsJson.MealOptions[0].MenuItems.forEach((menuItem) => {
+                if (food !== ''){
+                    food = `${food}, ${menuItem.Name}`
+                } else {
+                    food = menuItem.Name;
+                }
+            });
             return {
-                food: response.data.MealOptions.MenuItems.Name,
-                menuName: response.data.name,
+                food,
+                menuName: responseAsJson.MenuTypeName,
             };
         });
     } catch(error) {
@@ -246,6 +273,18 @@ async function handleInlineQuery(body, resHandle) {
     }
     */
 }
+
+router.get('/test', async (req, res) => {
+    const dateNow = new Date();
+    const something = await getMenu({
+        id: 480054,
+        name: "napa",
+        menuTypeIds: [93, 84, 60, 86, 77],
+        // for dev only use one menu
+        //menuTypeIds: [93],
+    }, dateNow.toISOString());
+    res.status(200).send(something);
+});
 
 // todo voitaisiin käyttää middlewareja johon hypitään tästä handlerista,
 // todo tää vois vaan toimia semmosena routterina
