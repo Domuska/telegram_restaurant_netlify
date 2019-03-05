@@ -57,11 +57,68 @@ router.get('/', (req, res) => {
 });
 */
 
+/*
+restaurants_dict2 = {
+    "foobar": {
+        "restaurant_id": 490051,
+        "menu_ids": [60, 78, 3, 23, 84]
+    },
+    "mara": {
+        "restaurant_id": 49,
+        "menu_ids": [60, 93, 23, 84]
+    },
+    "väistö": {
+        "restaurant_id": 480066,
+        "menu_ids": [95, 84]
+    },
+    "kylymä": {
+        "restaurant_id": 490052,
+        "menu_ids": [60, 23, 84]
+    },
+    "napa": {
+        "restaurant_id": 480054,
+        "menu_ids": [60, 93, 77, 86, 84]
+    }
+}
+ */
+
+const knownRestaurants = [
+    {
+        id: 480054,
+        name: "napa",
+        menuTypeIds: [93, 84, 60, 86, 77],
+    },
+    {
+        id: 49,
+        name: "mara",
+        menuTypeIds: []
+    },
+    {
+        id: 490051,
+        name: "foobar",
+        menuTypeIds: [3, 78, 84, 60, 23],
+    },
+    {
+        id: 480066,
+        name: "väistö",
+        menuTypeIds: [93, 95],
+    },
+    {
+        id: 480052,
+        name: "kylymä",
+        menuTypeIds: [84, 95],
+    },
+];
+
+const getMenuByDateUrl = "https://juvenes.fi//DesktopModules/Talents.LunchMenu/LunchMenuServices.asmx/GetMenuByDate?lang=en&";
+// GetMenuByDate?KitchenId=480054&MenuTypeId=93&Date=2019-03-05T19:24:31.610Z&
+
 async function handleInlineQuery(body, resHandle) {
     console.log('handling inline query!');
     console.log(body);
     const url = `${botUrl}answerInlineQuery`;
     const results = [];
+    /*
     const result = {
         type: "article",
         id: 1,
@@ -72,16 +129,78 @@ async function handleInlineQuery(body, resHandle) {
         },
     };
     results.push(result);
+    */
+
+    /*
+    9:02:28 PM: { update_id: 681007098,
+  inline_query:
+   { id: '1653101880932669400',
+     from:
+      { id: 384892774,
+        is_bot: false,
+        first_name: 'Tomi',
+        last_name: 'Lämsä',
+        language_code: 'en' },
+     query: 'something',
+     offset: '' } }
+     */
+
+    const { inline_query } = body;
 
     const inlineResponseBody = {
         inline_query_id: body.inline_query.id,
-        results,
         // short cache time for dev purposes
         cache_time: 10,
     };
 
+    const restaurant = knownRestaurants.find((knownRestaurant) => {
+        return knownRestaurant.name === inline_query.query;
+    });
+
+    if (restaurant) {
+        // found restaurant
+        console.log(`found restaurant by name ${restaurant.name}`);
+        console.log('fetching data and returning it....');
+        inlineResponseBody.results = [
+            {
+                type: "article",
+                id: 1,
+                title: restaurant.name,
+                description: `Menu for ${restaurant.name}`,
+                input_message_content: {
+                    message_text: `From ${restaurant.name} you can get healthy ärtsoppa. For now....`,
+                },
+            },
+        ];
+    } else {
+        try {
+            console.log('sending error response, restaurant not found');
+            inlineResponseBody.results = [
+                {
+                    type: "article",
+                    id: 1,
+                    title: "Oops...",
+                    description: "Please give a restaurant name",
+                    input_message_content: {
+                        message_text: "Enter a restaurant name after @oy_restaurant_bot to fetch a menu",
+                    },
+                }
+            ];
+            const response = await axios.post(url, inlineResponseBody);
+            console.log('response got from telegram:');
+            console.log(response);
+            resHandle.status(200).send();
+        } catch(error) {
+            console.log('error sending error.. What is this.');
+            resHandle.status(500).send();
+        }
+
+    }
+
+
+    /*
     try{
-        const response = await axios.post(url, inlineResponseBody);
+        //const response = await axios.post(url, inlineResponseBody);
         console.log('response got from telegram:');
         console.log(response);
         resHandle.status(200).send();
@@ -90,6 +209,7 @@ async function handleInlineQuery(body, resHandle) {
         console.log(error);
         resHandle.status(500).send();
     }
+    */
 }
 
 // todo voitaisiin käyttää middlewareja johon hypitään tästä handlerista,
