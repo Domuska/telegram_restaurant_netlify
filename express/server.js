@@ -161,6 +161,7 @@ async function getMenu(restaurant, date) {
             return {
                 food,
                 menuName: responseAsJson.MenuTypeName,
+                stringified: `${menuName}: ${food}`,
             };
         });
     } catch(error) {
@@ -219,6 +220,14 @@ async function handleInlineQuery(body, resHandle) {
         console.log('fetching data and returning it....');
         const dateNow = new Date();
         const menu = await getMenu(restaurant, dateNow.toISOString());
+        let superStringResponseTemporary = '';
+            menu.forEach((element) => {
+            if (superStringResponseTemporary !== '') {
+               superStringResponseTemporary = `${superStringResponseTemporary}, ${element.stringified}`;
+            } else {
+                superStringResponseTemporary = element.stringified;
+            }
+        });
         inlineResponseBody.results = [
             {
                 type: "article",
@@ -226,7 +235,7 @@ async function handleInlineQuery(body, resHandle) {
                 title: restaurant.name,
                 description: `Menu for ${restaurant.name}`,
                 input_message_content: {
-                    message_text: `${menu.toString()}`,
+                    message_text: `${superStringResponseTemporary}`,
                 },
             },
         ];
