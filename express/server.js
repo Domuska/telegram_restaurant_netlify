@@ -81,7 +81,7 @@ async function handleInlineQuery(body, resHandle) {
     };
 
     try{
-        const response = axios.post(url, inlineResponseBody);
+        const response = await axios.post(url, inlineResponseBody);
         console.log('response got from telegram:');
         console.log(response);
         resHandle.status(200).send();
