@@ -161,7 +161,7 @@ async function getMenu(restaurant, date) {
             return {
                 food,
                 menuName: responseAsJson.MenuTypeName,
-                stringified: `${menuName}: ${food}`,
+                stringified: `${responseAsJson.MenuTypeName}: ${food}`,
             };
         });
     } catch(error) {
