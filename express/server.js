@@ -226,7 +226,7 @@ async function handleInlineQuery(body, resHandle) {
                 title: restaurant.name,
                 description: `Menu for ${restaurant.name}`,
                 input_message_content: {
-                    message_text: `${menu}`,
+                    message_text: `${menu.toString()}`,
                 },
             },
         ];
