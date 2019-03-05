@@ -25,7 +25,7 @@ function revertMessage(msg) {
         reversed = msg.split("").reverse().join("");
     }
     catch(error ) {
-        reversed = '';
+        reversed = "don't tell me what to do.";
         console.log('unable to reverse, sending empty msg')
     }
     return reversed;
@@ -57,18 +57,50 @@ router.get('/', (req, res) => {
 });
 */
 
-function handleInlineQuery(body) {
+async function handleInlineQuery(body, resHandle) {
     console.log('handling inline query!');
     console.log(body);
+    const url = `${botUrl}answerInlineQuery`;
+    const results = [];
+    const result = {
+        type: "article",
+        id: 1,
+        title: "Napa",
+        description: "Menu for napa",
+        input_message_content: {
+            message_text: "From napa you can get healthy ärtsoppa",
+        },
+    };
+    results.push(result);
+
+    const inlineResponseBody = {
+        inline_query_id: body.inline_query.id,
+        results,
+        // short cache time for dev purposes
+        cache_time: 10,
+    };
+
+    try{
+        const response = axios.post(url, inlineResponseBody);
+        console.log('response got from telegram:');
+        console.log(response);
+        resHandle.status(200).send();
+    } catch(error) {
+        console.log('error while sending inline query response');
+        console.log(error);
+        resHandle.status(500).send();
+    }
 }
 
+// todo voitaisiin käyttää middlewareja johon hypitään tästä handlerista,
+// todo tää vois vaan toimia semmosena routterina
 router.post('/', (req, res) => {
     console.log('______ request coming in, req body:');
     console.log(req.body);
     //const chatId = getChatId(req);
     if (req.body.hasOwnProperty("inline_query")) {
         console.log('handling inline query...');
-        handleInlineQuery(req.body);
+        handleInlineQuery(req.body, res);
     } else {
         let reverted = revertMessage(getMessage(req.body));
         reverted = encodeURIComponent(reverted);
