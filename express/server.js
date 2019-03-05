@@ -25,8 +25,8 @@ function revertMessage(msg) {
         reversed = msg.split("").reverse().join("");
     }
     catch(error ) {
-        reversed = msg;
-        console.log(error);
+        reversed = '';
+        console.log('unable to reverse, sending empty msg')
     }
     return reversed;
 }
@@ -57,36 +57,37 @@ router.get('/', (req, res) => {
 });
 */
 
+function handleInlineQuery(body) {
+    console.log('handling inline query!');
+    console.log(body);
+}
+
 router.post('/', (req, res) => {
-    console.log('_________ stuff requested, req body:');
+    console.log('______ request coming in, req body:');
     console.log(req.body);
     //const chatId = getChatId(req);
-    let reverted = revertMessage(getMessage(req.body));
-    reverted = encodeURIComponent(reverted);
-    const url = `${botUrl}sendMessage?chat_id=${getChatId(req.body)}&text=${reverted}`;
-    //const url = `${botUrl}sendMessage?chat_id=384892774&text=something_nice!`;
-    console.log(url);
+    if (req.body.hasOwnProperty("inline_query")) {
+        console.log('handling inline query...');
+        handleInlineQuery(req.body);
+    } else {
+        let reverted = revertMessage(getMessage(req.body));
+        reverted = encodeURIComponent(reverted);
+        const url = `${botUrl}sendMessage?chat_id=${getChatId(req.body)}&text=${reverted}`;
+        //const url = `${botUrl}sendMessage?chat_id=384892774&text=something_nice!`;
+        console.log(url);
 
-    axios.post(url)
-        .then((response) => {
-            console.log('got response from tellygram');
-            //console.log(response);
-            res.status(200).send();
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+        axios.post(url)
+            .then((response) => {
+                console.log('got response from tellygram');
+                //console.log(response);
+                res.status(200).send();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
 });
 
-
-
-router.get('/heitomi', (req, res) => {
-    console.log('heitomi');
-    res.status(200).send({msg: 'hei tomi'});
-});
-
-router.get('/another', (req, res) => res.json({ route: req.originalUrl }));
-router.post('/', (req, res) => res.json({ postBody: req.body }));
 
 app.use(bodyParser.json());
 app.use('/.netlify/functions/server', router);  // path must route to lambda
