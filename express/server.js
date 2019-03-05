@@ -86,7 +86,9 @@ const knownRestaurants = [
     {
         id: 480054,
         name: "napa",
-        menuTypeIds: [93, 84, 60, 86, 77],
+        //menuTypeIds: [93, 84, 60, 86, 77],
+        // for dev only use one menu
+        menuTypeIds: [93],
     },
     {
         id: 49,
@@ -111,7 +113,30 @@ const knownRestaurants = [
 ];
 
 const getMenuByDateUrl = "https://juvenes.fi//DesktopModules/Talents.LunchMenu/LunchMenuServices.asmx/GetMenuByDate?lang=en&";
-// GetMenuByDate?KitchenId=480054&MenuTypeId=93&Date=2019-03-05T19:24:31.610Z&
+// KitchenId=480054&MenuTypeId=93&Date=2019-03-05T19:24:31.610Z&
+
+async function getMenu(restaurant, date) {
+    const promises = [];
+    const urlWithDate = `${getMenuByDateUrl}Date=${date}&`;
+    restaurant.menuTypeIds.forEach((menuTypeId) => {
+        const menuUrl = `${urlWithDate}KitchenId=${menuTypeId}`;
+        console.log('finished url:');
+        console.log(menuUrl);
+        promises.push(axios.get(menuUrl));
+    });
+    try{
+        const menus = await Promise.all(promises);
+        return menus.map((menu) => {
+            return {
+                food: menu.MealOptions.MenuItems.Name,
+                menuName: menu.name,
+            };
+        });
+    } catch(error) {
+        console.log("error fetching menus:");
+        console.log(error);
+    }
+}
 
 async function handleInlineQuery(body, resHandle) {
     console.log('handling inline query!');
@@ -161,6 +186,8 @@ async function handleInlineQuery(body, resHandle) {
         // found restaurant
         console.log(`found restaurant by name ${restaurant.name}`);
         console.log('fetching data and returning it....');
+        const dateNow = new Date();
+        const menu = await getMenu(restaurant, dateNow);
         inlineResponseBody.results = [
             {
                 type: "article",
@@ -168,13 +195,13 @@ async function handleInlineQuery(body, resHandle) {
                 title: restaurant.name,
                 description: `Menu for ${restaurant.name}`,
                 input_message_content: {
-                    message_text: `From ${restaurant.name} you can get healthy ärtsoppa. For now....`,
+                    message_text: `${menu}`,
                 },
             },
         ];
         const response = await axios.post(url, inlineResponseBody);
         console.log('response got from telegram:');
-        console.log(response);
+        //console.log(response);
         resHandle.status(200).send();
     } else {
         try {
@@ -192,7 +219,7 @@ async function handleInlineQuery(body, resHandle) {
             ];
             const response = await axios.post(url, inlineResponseBody);
             console.log('response got from telegram:');
-            console.log(response);
+            //console.log(response);
             resHandle.status(200).send();
         } catch(error) {
             console.log('error sending error.. What is this.');
